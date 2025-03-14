@@ -36,7 +36,7 @@ def get_html_content(url):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36 Edge/15.15063'
     }
     try:
-        response = requests.get(url, headers=header, stream=True, timeout=(10, 10))
+        response = requests.get(url, headers=header, stream=True, timeout=(20, 20))
         response.raise_for_status()  # 检查响应状态码
         return response.content
     except requests.RequestException as e:
@@ -46,7 +46,7 @@ def get_html_content(url):
 
 def parse_html(bs):
     """
-    解析HTML内容，提取数据
+    解析HTML内容,提取数据
     :param bs: BeautifulSoup对象
     :return: 解析后的数据列表和列名列表
     """
@@ -104,22 +104,19 @@ def getData(city, startYear, endYear, month2024_list, df):
 
 
 if __name__ == "__main__":
-    citys = ['jinzhong','shijiazhuang','taiyuan','haerbing','chongqing','nanjing']
+    #citys = ['','']
     startYear = 2019
     endYear = 2024
     month2024_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12]
 
-    for city in citys:
-        # 起止时间设置
+    city = "changchun"
+    # 爬取结果存取到df对象中
+    df = pd.DataFrame()
 
-
-        # 爬取结果存取到df对象中
-        df = pd.DataFrame()
-
+    df, fail_list = getData(city, startYear, endYear, month2024_list, df)
+    while len(fail_list) > 8:
         df, fail_list = getData(city, startYear, endYear, month2024_list, df)
-        while len(fail_list) > 0:
-            df, fail_list = getData(city, startYear, endYear, month2024_list, df)
 
-        df = df.sort_values(by='日期').reset_index(drop=True)
-        # 保存为csv文件
-        df.to_csv(f'{city}/origin.csv', index=False)
+    df = df.sort_values(by='日期').reset_index(drop=True)
+    # 保存为csv文件
+    df.to_csv(f'{city}/origin.csv', index=False)
